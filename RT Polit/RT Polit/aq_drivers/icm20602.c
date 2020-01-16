@@ -347,12 +347,12 @@ rt_err_t icm20602_init(const char *bus_name, const char * spi_device_name)
 
     sensor_lock(spi_acc_gyro_device);
 
-    icm20602_write_reg(ICM20_PWR_MGMT_1,0x80);	//¸´Î»£¬¸´Î»ºóÎ»0x41,Ë¯ÃßÄ£Ê½£¬
+    icm20602_write_reg(ICM20_PWR_MGMT_1,0x80);	//ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½Î»0x41,Ë¯ï¿½ï¿½Ä£Ê½ï¿½ï¿½
     rt_thread_delay(50);
-    icm20602_write_reg(ICM20_PWR_MGMT_1,0x01);		//¹Ø±ÕË¯Ãß£¬×Ô¶¯Ñ¡ÔñÊ±ÖÓ
+    icm20602_write_reg(ICM20_PWR_MGMT_1,0x01);		//ï¿½Ø±ï¿½Ë¯ï¿½ß£ï¿½ï¿½Ô¶ï¿½Ñ¡ï¿½ï¿½Ê±ï¿½ï¿½
     rt_thread_delay(50);
 
-    id = icm20602_read_reg(ICM20_WHO_AM_I);//¶ÁÈ¡ID
+    id = icm20602_read_reg(ICM20_WHO_AM_I);//ï¿½ï¿½È¡ID
     ICM_TRACE("icm_20602 id=0x%x\r\n",id);
 
     if(id != 0x12)
@@ -367,14 +367,14 @@ rt_err_t icm20602_init(const char *bus_name, const char * spi_device_name)
     icm20602_write_reg(ICM20_PWR_MGMT_2, 0x00);
     rt_thread_delay(10);
 
-    icm20602_write_reg(ICM20_SMPLRT_DIV,0);			//·ÖÆµÊý=Îª0+1£¬Êý¾ÝÊä³öËÙÂÊÎªÄÚ²¿²ÉÑùËÙÂÊ
+    icm20602_write_reg(ICM20_SMPLRT_DIV,0);			//ï¿½ï¿½Æµï¿½ï¿½=Îª0+1ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½Ú²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     rt_thread_delay(10);
-    icm20602_write_reg(ICM20_CONFIG,DLPF_BW_250);	//GYROµÍÍ¨ÂË²¨ÉèÖÃ
+    icm20602_write_reg(ICM20_CONFIG,DLPF_BW_250);	//GYROï¿½ï¿½Í¨ï¿½Ë²ï¿½ï¿½ï¿½ï¿½ï¿½
     rt_thread_delay(10);
-    icm20602_write_reg(ICM20_ACCEL_CONFIG2,ACCEL_AVER_4|ACCEL_DLPF_BW_218);	//ACCELµÍÍ¨ÂË²¨ÉèÖÃ
+    icm20602_write_reg(ICM20_ACCEL_CONFIG2,ACCEL_AVER_4|ACCEL_DLPF_BW_218);	//ACCELï¿½ï¿½Í¨ï¿½Ë²ï¿½ï¿½ï¿½ï¿½ï¿½
     rt_thread_delay(10);
 
-    //ÉèÖÃÁ¿³Ì
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     // ACC scale
 #if MPU6000_ACC_SCALE == 2
     icm20602_write_reg(ICM20_ACCEL_CONFIG,ICM20_ACCEL_FS_2G);
@@ -405,9 +405,9 @@ rt_err_t icm20602_init(const char *bus_name, const char * spi_device_name)
 
     rt_thread_delay(10);
 
-    icm20602_write_reg(ICM20_LP_MODE_CFG, 0x00);	//¹Ø±ÕµÍ¹¦ºÄ
+    icm20602_write_reg(ICM20_LP_MODE_CFG, 0x00);	//ï¿½Ø±ÕµÍ¹ï¿½ï¿½ï¿½
     rt_thread_delay(10);
-    icm20602_write_reg(ICM20_FIFO_EN, 0x00);		//¹Ø±ÕFIFO
+    icm20602_write_reg(ICM20_FIFO_EN, 0x00);		//ï¿½Ø±ï¿½FIFO
 
     sensor_unlock(spi_acc_gyro_device);
 

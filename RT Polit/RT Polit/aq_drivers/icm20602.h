@@ -21,12 +21,12 @@
 #include "LowPassFilterFloat.h"
 #include "LowPassFilterFloat.h"
 
-//╪скы╤ха©Ёл
+//О©╫О©╫О©╫ы╤О©╫О©╫О©╫О©╫О©╫
 #define ICM20_ACCEL_FS_2G			(0<<3)
 #define ICM20_ACCEL_FS_4G			(1<<3)
 #define ICM20_ACCEL_FS_8G			(2<<3)
 #define ICM20_ACCEL_FS_16G			(3<<3)
-//╫гкы╤ха©Ёл
+//О©╫О©╫О©╫ы╤О©╫О©╫О©╫О©╫О©╫
 #define ICM20_GYRO_FS_250			(0<<3)
 #define ICM20_GYRO_FS_500			(1<<3)
 #define ICM20_GYRO_FS_1000			(2<<3)

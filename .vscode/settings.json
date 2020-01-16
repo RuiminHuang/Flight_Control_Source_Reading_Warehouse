@@ -10,6 +10,7 @@
         "command.h": "c",
         "telemetry.h": "c",
         "cancalib.h": "c",
-        "aq_mavlink.h": "c"
+        "aq_mavlink.h": "c",
+        "imu.h": "c"
     }
 }
