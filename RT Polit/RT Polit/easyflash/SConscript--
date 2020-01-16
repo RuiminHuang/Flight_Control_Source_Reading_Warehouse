@@ -1,0 +1,23 @@
+Import('RTT_ROOT')
+Import('rtconfig')
+from building import *
+
+cwd     = os.path.join(str(Dir('#')), 'easyflash')
+
+src = Split("""
+src/easyflash.c
+src/ef_env.c
+src/ef_env_wl.c
+src/ef_iap.c
+src/ef_log.c
+src/ef_utils.c
+port/ef_port.c
+""")
+
+path = [cwd + '/inc', 
+    cwd + '/plugins/types']
+    
+group = DefineGroup('easyflash', src, depend = ['RT_USING_EASYFLASH'], CPPPATH = path)
+
+Return('group')
+

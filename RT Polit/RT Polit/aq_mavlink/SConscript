@@ -1,0 +1,21 @@
+import rtconfig
+Import('RTT_ROOT')
+from building import *
+
+# get current directory
+cwd = GetCurrentDir()
+
+# The set of source files associated with this SConscript file.
+src = Split("""
+aq_mavlink.c
+""")
+
+path = [cwd + '/include/autoquad', 
+    cwd + '/include',
+    cwd + '/include/common'
+	]
+cwd = GetCurrentDir()	
+path += [cwd]
+group = DefineGroup('AQ_mavlink', src, depend = [''], CPPPATH = path)
+
+Return('group')

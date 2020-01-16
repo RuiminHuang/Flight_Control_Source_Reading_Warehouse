@@ -1,0 +1,19 @@
+import rtconfig
+Import('RTT_ROOT')
+from building import *
+
+# get current directory
+cwd     = os.path.join(str(Dir('#')), 'aq_hilsim')
+
+# The set of source files associated with this SConscript file.
+src = Split("""
+""")
+
+path = [cwd + '/include', 
+	]
+
+#CPPDEFINES = ['USE_STDPERIPH_DRIVER', rtconfig.STM32_TYPE]
+CPPDEFINES = ['USE_STDPERIPH_DRIVER']
+group = DefineGroup('AQ_hilsim', src, depend = [''], CPPPATH = path, CPPDEFINES = CPPDEFINES)
+
+Return('group')
