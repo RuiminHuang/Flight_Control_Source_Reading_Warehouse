@@ -292,7 +292,7 @@ static void setLowBattery1Misson(void)
             wp->poiAltitude = 0.0f;
 
             wp = navGetWaypoint(wpi++);
-            /*  ²»ÒªÏÈ½µµ½µ½¼ÒµÄ¸ß¶È£¬Ö±½ÓÒ»´ÎÐÔ½µµ½µ×
+            /*  ï¿½ï¿½Òªï¿½È½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÒµÄ¸ß¶È£ï¿½Ö±ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½ï¿½ï¿½
             // decend to home
             wp->type = NAV_LEG_HOME;
             wp->targetRadius = SUPERVISOR_HOME_POS_DETECT_RADIUS;
@@ -484,14 +484,14 @@ void supervisorTaskCode(void *unused) {
                 supervisorData.armTime = 0;
             }
 			
-			//ÅÐ¶ÏÊÇ·ñ½øÈëÖØÆô Ò¡¸ËÍâ°Ë×Ö±£³Ö5Ãë
+			//ï¿½Ð¶ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ò¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½ï¿½5ï¿½ï¿½
             if (RADIO_VALID && RADIO_THROT < 10 && RADIO_RUDD < -500 && RADIO_PITCH > +500 && RADIO_ROLL > +500)
 			{
                 if (!supervisorData.bootTime) {
                     supervisorData.bootTime = timerMicros();
                 }
 //                else if ((timerMicros() - supervisorData.bootTime) > SUPERVISOR_RESET_TIME) {
-//                    //ÖØÆô½øÈëbootÉý¼¶
+//                    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½bootï¿½ï¿½ï¿½ï¿½
 //					supervisorData.bootTime = 0;
 //			        set_env_by_name("start_iap",1);//
 //			        NVIC_SystemReset();
@@ -545,7 +545,7 @@ void supervisorTaskCode(void *unused) {
                 }
                 else if ((timerMicros() - supervisorData.armTime) > SUPERVISOR_DISARM_TIME) {
 
-                    //spvrModeOverride ==misson  ÔÙ¸É£¿
+                    //spvrModeOverride ==misson  ï¿½Ù¸É£ï¿½
                     navData.spvrModeOverride = 0;//
                     supervisorDisarm();
                     supervisorData.armTime = 0;
@@ -636,7 +636,7 @@ void supervisorTaskCode(void *unused) {
                         wp->poiAltitude = 0.0f;
 
                         wp = navGetWaypoint(wpi++);
-                        /*  ²»ÒªÏÈ½µµ½µ½¼ÒµÄ¸ß¶È£¬Ö±½ÓÒ»´ÎÐÔ½µµ½µ×
+                        /*  ï¿½ï¿½Òªï¿½È½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÒµÄ¸ß¶È£ï¿½Ö±ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½ï¿½ï¿½
                         // decend to home
                         		wp->type = NAV_LEG_HOME;
                         		wp->targetRadius = SUPERVISOR_HOME_POS_DETECT_RADIUS;
@@ -669,7 +669,7 @@ void supervisorTaskCode(void *unused) {
             }
         }
         // end radio loss check
-        //------------×Ô¶¯Æð·É ×Ô¶¯½µÂä
+        //------------ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ï¿½
 #ifdef _AUTO_TAKEOFF_LAND
         if ((supervisorData.state & STATE_ARMED) && (supervisorData.state & STATE_FLYING) && (navData.navCapable || navUkfData.flowQuality > 0.0f) && (rcIsSwitchActive(NAV_CTRL_PH)) && (RADIO_THROT>(RADIO_MID_THROTTLE-p[CTRL_DBAND_THRO])) && (RADIO_THROT<(RADIO_MID_THROTTLE+p[CTRL_DBAND_THRO])))
         {
@@ -686,7 +686,7 @@ void supervisorTaskCode(void *unused) {
                 if ((swt_chg_count >= AUTO_SWT_TIMES) && (timeOverLimit))
                 {
                     if (navData.takeOff == false)
-                    {   //ÉèÖÃÆð·ÉÈÎÎñ
+                    {   //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                         if ((!take_off_delay) && (!land_delay))
                         {
                             setAutoTakeOffMisson();
@@ -695,7 +695,7 @@ void supervisorTaskCode(void *unused) {
                         }
                     }
                     else
-                    {   //ÉèÖÃ½µÂäÈÎÎñ
+                    {   //ï¿½ï¿½ï¿½Ã½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                         if  ((!take_off_delay) && (!land_delay))
                         {
                             land_delay = 100;        //5s
@@ -737,7 +737,7 @@ void supervisorTaskCode(void *unused) {
         if(land_delay)
             land_delay--;
 #endif
-        //------------×Ô¶¯Æð·É ×Ô¶¯½µÂä
+        //------------ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ï¿½
 
         // check for configuration or calibration requests from other threads
         // (this is done in part to centralize memory use for potentially expensive printf/scanf and I/O operations)

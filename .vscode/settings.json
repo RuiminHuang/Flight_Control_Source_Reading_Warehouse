@@ -9,6 +9,7 @@
         "board.h": "c",
         "command.h": "c",
         "telemetry.h": "c",
-        "cancalib.h": "c"
+        "cancalib.h": "c",
+        "aq_mavlink.h": "c"
     }
 }

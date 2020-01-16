@@ -16,20 +16,28 @@
 #include <rthw.h>
 #include <rtthread.h>
 
+//@HRM RT-Thread device file system
 #ifdef RT_USING_DFS
 #include <dfs_file.h>
 #endif
 
+//@HRM RT-Thread device choose
 #ifdef RT_USING_DEVICE
 #include <rtdevice.h>
 #endif
 
+//@HRM RT-Thread for some board ram address definition
 #include <board.h>
+//@HRM RT-Thread for some pin definition
 #include <drivers/pin.h>
-#include "platform.h"
+//@HRM RT-Thread device choose, have alread used
 #include <rtdevice.h>
-#include "aq_init.h"
 
+//@HRM RT-Polit for hardware init SPI3 only
+#include "platform.h"
+
+//@HRM The following file is transplant from AutoQuad
+#include "aq_init.h"
 #include "alt_ukf.h"
 #include "analog.h"
 #include "aq_mavlink.h"
@@ -65,6 +73,8 @@
 #ifdef HAS_TELEM_SMARTPORT
 #include "telem_sPort.h"
 #endif
+
+//@HRM in idle hook, it will calculate CPU usage rate
 #include <cpuusage.h>
 //#include "app_easyflash.h"
 //#include "easyflash.h"
@@ -72,9 +82,11 @@
 volatile unsigned long counter;
 volatile unsigned long minCycles = 0xFFFFFFFF;
 
+//@HRM all do is used for led_init();
 static void led1_thread_entry(void* parameter);
 static int led_init(void);
 
+//@HRM dump the chip clock frequence
 void dump_clock(void)
 {
     rt_kprintf("OSC clock : %d\n",                  CLOCK_GetFreq(kCLOCK_OscClk));
@@ -102,6 +114,7 @@ void dump_clock(void)
     rt_kprintf("USB2PLLCLK(PLL7) : %d\n",           CLOCK_GetFreq(kCLOCK_Usb2PllClk));
 }
 
+//@HRM dump the compilation tools info
 void dump_cc_info(void)
 {
 #if defined(__CC_ARM)
@@ -113,6 +126,7 @@ void dump_cc_info(void)
 #endif
 }
 
+//@HRM dump the toochain info
 void dump_link_info(void)
 {
 #if defined(__CC_ARM)
@@ -154,6 +168,7 @@ void dump_link_info(void)
 #endif
 }
 
+//@HRM user hook
 //static char test[90];
 static void rtt_user_assert_hook(const char* ex, const char* func, rt_size_t line)
 {
@@ -165,6 +180,7 @@ static void rtt_user_assert_hook(const char* ex, const char* func, rt_size_t lin
     while(1);
 }
 
+//@HRM fatal hook
 static rt_err_t exception_hook(void *context)
 {
 	rt_kprintf("exception_hook\r\n");
@@ -179,6 +195,7 @@ int main(void)
     rt_uint32_t result;
 	rt_uint32_t priority;
 
+    //@HRM show all the build time
 	rt_kprintf("build time: %s %s\n", __DATE__, __TIME__);
     rt_kprintf("\r\n");
     rt_kprintf("********************************");
@@ -189,24 +206,32 @@ int main(void)
     rt_kprintf("********************************");
     rt_kprintf("\r\n");
 	
+    //@HRM dump the cc and link
     //dump_clock();
     dump_cc_info();
     dump_link_info();
 
-   
+    //@HRM set the hardware hook
     /* set hardware exception hook */
     rt_hw_exception_install(exception_hook);
+
+    //@HRM set the user hook
     /* set RT-Thread assert hook */
     rt_assert_set_hook(rtt_user_assert_hook);
-		
+
+    //@HRM set the CPU idle hook, so the to get the CPU usage rate
     cpu_usage_init();
 
+    //@HRM init the SPI3 only
     rt_platform_init();		
 
+    //@HRM, if there detect a TF card
 #if defined(RT_USING_DFS) && defined(RT_USING_SDIO)
     result = mmcsd_wait_cd_changed(RT_TICK_PER_SECOND);
+    //@HRM, check whether the TF card has insert
     if (result == MMCSD_HOST_PLUGED)
     {
+        //@HRM, if inserted, then just mount the TF card
         /* mount sd card fat partition 1 as root directory */
         if (dfs_mount("sd0", "/", "elm", 0, 0) == 0)
             rt_kprintf("File System initialized!\n");
@@ -219,27 +244,37 @@ int main(void)
     }
 #endif
 
+    //@HRM Init and start a LED
     led_init();
 
+    //@HRM require RTC for microsecond
     rtcInit();	    // have to do this first as it requires our microsecond timer to calibrate
+
+    //@HRM Init timer to get microsecond
     timerInit();    // now setup the microsecond timer before everything else
 
+    //@HRM RT-Thread Set the mailbox now, all is used for com port notice queue
     commNoticesInit();  // set up notice queue
 //    filerInit();//jiezhi320
 
     //easyflash_init();
 	
 //	NorFlashInit();
+    //Set data to the default config
   configInit();
 
-    //»ñÈ¡comm1 bitrate²¢±£´æ ÓÃÓÚboot ³õÊ¼»¯´®¿Úcom1
+    //ï¿½ï¿½È¡comm1 bitrateï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½boot ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½com1
     //set_env_by_name("comm1_bitrate", p[COMM_BAUD1]);
-
+    
+    //config the beep and pwm light port
     signalingInit();
-#if 1	
+#if 1
+    //RT-Thread start status signal message task init and start
     supervisorInit();
+    //@HRM RT-Thread Start the com port communication task
     commInit();
 #ifdef USE_MAVLINK
+    //@HRM Init the basic mavlink message
     mavlinkInit();
 #endif
 #ifdef HAS_AQ_TELEMETRY
@@ -249,24 +284,40 @@ int main(void)
     if (((uint32_t)p[TELEMETRY_RX_CFG] & 0xF) == 1)
         sPortInit();
 #endif
+
+    //@HRM Init the IMU Module
     imuInit();
+    //@HRM for Voltage acquisition
     analogInit();
+    //@HRM navigation UKF
     navUkfInit();
+    //@HRM height UKF
     altUkfInit();
+    //@HRM RT-Thread init and start the remote radio task
     radioInit();
+    //@HRM RT-Thread init and start the GPS task
     gpsInit();
+
+    //@HRM  Head and Alt hold for navigate
     navInit();
     //loggerInit();//jiezhi320
+    //@HRM Set for hilSim only
     hilSimInit();
+    //@HRM PWM and motor Init 
     motorsInit();
+    //@HRM RT-Thread Cascade PID Control task init and start
     controlInit();
   
+    //@HRM RT-Thread Run task init and start
     runInit();
 
+    //@HRM Just print the information, not used here
     info();
 
+    //@HRM Status signal message complete and then disarm
     supervisorInitComplete();
 
+    //@HRM which is just like rt_thread_delay
     // allow tasks to startup
     yield(10);
 
@@ -274,6 +325,7 @@ int main(void)
 
     // startup complete, reduce comm task priority
 
+    //@HRM set com port message to low level after all finish
     priority = COMM_PRIORITY;
     rt_thread_control(&commTask,RT_THREAD_CTRL_CHANGE_PRIORITY,&priority);//CoSetPriority(commData.commTask, COMM_PRIORITY);
 
@@ -292,22 +344,22 @@ int main(void)
 }
 
 
-
+//@HRM all do is used for led_init();
 int led_init(void)
 {
     rt_thread_t led1_thread = RT_NULL;
     /*
-       * ¿ª·¢°åÓ²¼þ³õÊ¼»¯£¬RTTÏµÍ³³õÊ¼»¯ÒÑ¾­ÔÚmainº¯ÊýÖ®Ç°Íê³É£¬
-       * ¼´ÔÚcomponent.cÎÄ¼þÖÐµÄrtthread_startup()º¯ÊýÖÐÍê³ÉÁË¡£
-       * ËùÒÔÔÚmainº¯ÊýÖÐ£¬Ö»ÐèÒª´´½¨Ïß³ÌºÍÆô¶¯Ïß³Ì¼´¿É¡£
+       * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó²ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½RTTÏµÍ³ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½Ñ¾ï¿½ï¿½ï¿½mainï¿½ï¿½ï¿½ï¿½Ö®Ç°ï¿½ï¿½É£ï¿½?
+       * ï¿½ï¿½ï¿½ï¿½component.cï¿½Ä¼ï¿½ï¿½Ðµï¿½rtthread_startup()ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë¡ï¿½?
+       * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mainï¿½ï¿½ï¿½ï¿½ï¿½Ð£ï¿½Ö»ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ß³Ìºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß³Ì¼ï¿½ï¿½É¡ï¿½
        */
 
-    led1_thread = rt_thread_create("led1",                     /* Ïß³ÌÃû×Ö£¬×Ö·û´®ÐÎÊ½ */
-                                   led1_thread_entry,          /* Ïß³ÌÈë¿Úº¯Êý */
-                                   RT_NULL,                    /* Ïß³ÌÈë¿Úº¯Êý²ÎÊý */
-                                   512,     /* Ïß³ÌÕ»´óÐ¡£¬µ¥Î»Îª×Ö½Ú */
-                                   20,      /* Ïß³ÌÓÅÏÈ¼¶£¬ÊýÖµÔ½´ó£¬ÓÅÏÈ¼¶Ô½Ð¡ */
-                                   5);     /* Ïß³ÌÊ±¼äÆ¬ */
+    led1_thread = rt_thread_create("led1",                     /* ï¿½ß³ï¿½ï¿½ï¿½ï¿½Ö£ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½Ê½ */
+                                   led1_thread_entry,          /* ï¿½ß³ï¿½ï¿½ï¿½Úºï¿½ï¿½ï¿½? */
+                                   RT_NULL,                    /* ï¿½ß³ï¿½ï¿½ï¿½Úºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½? */
+                                   512,     /* ï¿½ß³ï¿½Õ»ï¿½ï¿½Ð¡ï¿½ï¿½ï¿½ï¿½Î»Îªï¿½Ö½ï¿½ */
+                                   20,      /* ï¿½ß³ï¿½ï¿½ï¿½ï¿½È¼ï¿½ï¿½ï¿½ï¿½ï¿½ÖµÔ½ï¿½ï¿½ï¿½ï¿½ï¿½È¼ï¿½Ô½Ð¡ */
+                                   5);     /* ï¿½ß³ï¿½Ê±ï¿½ï¿½Æ¬ */
 
     if (led1_thread != RT_NULL)
     {
@@ -318,13 +370,12 @@ int led_init(void)
         return -1;
 }
 
-
+//@HRM all do is used for led_init(); tick every second
 /*
 *************************************************************************
-*                             Ïß³Ì¶¨Òå
+*                             ï¿½ß³Ì¶ï¿½ï¿½ï¿½
 *************************************************************************
 */
-
 static void led1_thread_entry(void* parameter)
 {
 
@@ -336,7 +387,7 @@ static void led1_thread_entry(void* parameter)
     while (1)
     {
         rt_pin_write(67, PIN_HIGH);
-        rt_thread_delay(500);   /* ÑÓÊ±£¬µ¥Î»Îªtick */
+        rt_thread_delay(500);   /* ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Î»Îªtick */
         rt_pin_write(67, PIN_LOW);
         rt_thread_delay(500);
     }

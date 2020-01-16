@@ -24,6 +24,7 @@
 
 #include <rtthread.h>
 
+//@HRM in this function, dump the uint32_t address buf
 static void mem_dump(uint32_t buffer, uint32_t length)
 {
     uint32_t *buf = (uint32_t *)buffer;
@@ -33,6 +34,7 @@ static void mem_dump(uint32_t buffer, uint32_t length)
     {
         rt_kprintf("0x%08X,", buf[i]);
 
+        //@HRM every 8 * 32 bit( 8 * 4 byte ) print a next line
         if (i % 8 == 7)
         {
             rt_kprintf("\n");

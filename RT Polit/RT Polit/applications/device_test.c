@@ -469,6 +469,8 @@ __return:
     return RT_ERROR;
 }
 
+
+//@HRM finish find-> init -> test
 int device_test(const char * device_name)
 {
     rt_device_t device = RT_NULL;

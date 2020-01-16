@@ -16,8 +16,10 @@ static void cpu_usage_idle_hook(void)
     rt_uint32_t count;
     volatile rt_uint32_t loop;
 
+    //@HRM calculate the total count, in CPU_USAGE_CALC_TICK * CPU_USAGE_LOOP
     if (total_count == 0)
     {
+        //@HRM enter critical to make it sure the thread will only run here
         /* get total count */
         rt_enter_critical();
         tick = rt_tick_get();
@@ -25,22 +27,25 @@ static void cpu_usage_idle_hook(void)
         {
             total_count ++;
             loop = 0;
-
+            //@HRM int this way, CPU_USAGE_LOOP and loop is only used for delay
             while (loop < CPU_USAGE_LOOP) loop ++;
         }
         rt_exit_critical();
     }
 
     count = 0;
+    //@HRM get the count now
     /* get CPU usage */
     tick = rt_tick_get();
     while (rt_tick_get() - tick < CPU_USAGE_CALC_TICK)
     {
         count ++;
         loop  = 0;
+        //@HRM int this way, CPU_USAGE_LOOP and loop is only used for delay
         while (loop < CPU_USAGE_LOOP) loop ++;
     }
 
+    //@HRM total means in idle state, in this way, total_count - count equals to busy state
     /* calculate major and minor */
     if (count < total_count)
     {
@@ -67,12 +72,15 @@ static void cpu_usage_idle_hook(void)
 //    *minor = cpu_usage_minor;
 //}
 
+
+//@HRM return major as cpu_usage
 rt_int16_t cpu_usage_get(void)
 {
 	 rt_int16_t result = cpu_usage_major;//((int16_t)cpu_usage_major*100+cpu_usage_minor)/10;
      return result;
 }
 
+//@HRM set function cpu_usage_idle_hook as the idle hook
 void cpu_usage_init(void)
 {
     /* set idle thread hook */
