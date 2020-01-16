@@ -1,0 +1,14 @@
+{
+    "files.associations": {
+        "pin.h": "c",
+        "cpuusage.h": "c",
+        "platform.h": "c",
+        "rthw.h": "c",
+        "stdint.h": "c",
+        "rtdevice.h": "c",
+        "board.h": "c",
+        "command.h": "c",
+        "telemetry.h": "c",
+        "cancalib.h": "c"
+    }
+}
